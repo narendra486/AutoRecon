@@ -47,8 +47,8 @@ scan() {
   $ToolsDIR/amass/amass enum -d $domain -brute -max-dns-queries 200 -r 1.1.1.1,8.8.8.8 -o $ResultsPath/$domain/brute.txt > /dev/null 2>&1
   $ToolsDIR/amass/amass enum -d $domain -active -max-dns-queries 200 -r 1.1.1.1,8.8.8.8 -o $ResultsPath/$domain/active.txt > /dev/null 2>&1
   curl -s https://certspotter.com/api/v0/certs\?domain\=$domain | jq '.[].dns_names[]' | sed 's/\"//g' | sed 's/\*\.//g' | sort -u  >> $ResultsPath/$domain/certspotter.txt > /dev/null 2>&1
-  curl -s "https://crt.sh/?q=%.$domain&output=json" | jq '.[].name_value' | sed 's/\"//g' | sed 's/\*\.//g' | sort | uniq >> $ResultsPath/$domain/crtsh.txt > /dev/null 2>&1
-  curl -s "https://crt.sh/?q=%.%.%.%.$domain&output=json" | jq '.[].name_value' | sed 's/\"//g' | sed 's/\*\.//g' | sort | uniq >> $ResultsPath/$domain/crtsh.txt > /dev/null 2>&1
+  curl -s "https://crt.sh/?q=%.$domain&output=json" | jq -r '.[].name_value'  sort | uniq >> $ResultsPath/$domain/crtsh.txt > /dev/null 2>&1
+  curl -s "https://crt.sh/?q=%.%.%.%.$domain&output=json" | jq -r '.[].name_value'  sort | uniq >> $ResultsPath/$domain/crtsh.txt > /dev/null 2>&1
   waybackurls $domain | awk -F[/:] '{print $4}' | sort -u >> $ResultsPath/$domain/waybackurls.txt > /dev/null 2>&1
   cd /bounty/tools/punter/ ; python main.py -t $domain > /dev/null 2>&1
 
